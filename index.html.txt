@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pyramid Card Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #2e7d32;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .row {
+      margin: 10px 0;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      width: 60px;
+      height: 90px;
+      border: 1px solid #fff;
+      border-radius: 8px;
+      background-color: #1565c0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      margin: 5px;
+      user-select: none;
+    }
+    .disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+    #newGameBtn {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pyramid Card Game</h1>
+  <div id="gameBoard"></div>
+  <div id="message">Select a card from row 1</div>
+  <button id="newGameBtn">New Game</button>
+
+  <script>
+    // Define standard deck suits and ranks.
+    const suits = ['♠', '♥', '♦', '♣'];
+    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    let pyramid = [];         // Will hold the cards arranged by row.
+    let currentLine = 0;      // Which row is active (0-indexed; row 0 = first row).
+
+    // Create a full deck of 52 cards.
+    function createDeck() {
+      let deck = [];
+      for (let suit of suits) {
+        for (let rank of ranks) {
+          deck.push({ rank: rank, suit: suit });
+        }
+      }
+      return deck;
+    }
+
+    // Shuffle the deck using the Fisher-Yates algorithm.
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Initialize the game: build a new pyramid using 15 cards.
+    function initializeGame() {
+      currentLine = 0;
+      pyramid = [];
+      const deck = shuffle(createDeck());
+      let index = 0;
+      // The pyramid: row 0 has 5 cards, row 1 has 4, row 2 has 3, row 3 has 2, row 4 has 1 card.
+      for (let row = 0; row < 5; row++) {
+        let rowCards = [];
+        let cardsInRow = 5 - row;
+        for (let i = 0; i < cardsInRow; i++) {
+          rowCards.push(deck[index]);
+          index++;
+        }
+        pyramid.push(rowCards);
+      }
+      renderBoard();
+    }
+
+    // Render the pyramid board.
+    function renderBoard() {
+      const gameBoard = document.getElementById('gameBoard');
+      gameBoard.innerHTML = '';
+      pyramid.forEach((rowCards, rowIndex) => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+        rowCards.forEach((card, cardIndex) => {
+          const cardDiv = document.createElement('div');
+          cardDiv.className = 'card';
+          // Add data attributes to indicate which row and position the card occupies.
+          cardDiv.dataset.row = rowIndex;
+          cardDiv.dataset.index = cardIndex;
+          cardDiv.dataset.flipped = 'false';
+          // Initially display a card back symbol.
+          cardDiv.innerText = '❓';
+          cardDiv.addEventListener('click', onCardClick);
+          rowDiv.appendChild(cardDiv);
+        });
+        gameBoard.appendChild(rowDiv);
+      });
+      updateMessage();
+    }
+
+    // Update the message display.
+    function updateMessage(msg) {
+      const messageDiv = document.getElementById('message');
+      if (msg) {
+        messageDiv.innerText = msg;
+      } else {
+        messageDiv.innerText = `Select a card from row ${currentLine + 1}`;
+      }
+    }
+
+    // Called when a card is clicked.
+    function onCardClick(event) {
+      const cardDiv = event.currentTarget;
+      const row = parseInt(cardDiv.dataset.row);
+      const flipped = (cardDiv.dataset.flipped === 'true');
+
+      // Only allow a click if the card has not been flipped and it's in the active row.
+      if (flipped) return;
+      if (row !== currentLine) {
+        updateMessage(`Please select a card from row ${currentLine + 1}`);
+        return;
+      }
+
+      const cardIndex = parseInt(cardDiv.dataset.index);
+      const card = pyramid[row][cardIndex];
+
+      // "Flip" the card: reveal its rank and suit.
+      cardDiv.innerText = card.rank + card.suit;
+      cardDiv.dataset.flipped = 'true';
+      cardDiv.classList.add('disabled');
+
+      // If the card is a losing card (Ace, J, Q or K), then restart.
+      if (['A', 'J', 'Q', 'K'].includes(card.rank)) {
+        updateMessage(`You flipped ${card.rank}. Wrong card! Restarting game.`);
+        setTimeout(() => {
+          initializeGame();
+        }, 1500);
+      } else {  
+        // Otherwise, proceed to the next row.
+        currentLine++;
+        if (currentLine >= pyramid.length) {
+          updateMessage('Congratulations! You win!');
+          setTimeout(() => {
+            initializeGame();
+          }, 1500);
+        } else {
+          updateMessage();
+        }
+      }
+    }
+
+    // Hook up the New Game button.
+    document.getElementById('newGameBtn').addEventListener('click', initializeGame);
+
+    // Start the game when the page loads.
+    window.onload = initializeGame;
+  </script>
+</body>
+</html>
