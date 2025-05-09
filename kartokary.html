@@ -48,15 +48,65 @@
       font-size: 16px;
       cursor: pointer;
     }
+
+    /* ======================
+       BANNER STYLES
+       ====================== */
+    .banner {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffeb3b;
+      color: #000;
+      padding: 12px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
+  <!-- banner placeholder -->
+  <div id="banner" class="banner" style="display:none;"></div>
+
   <h1>Pyramid Card Game</h1>
   <div id="gameBoard"></div>
   <div id="message">Select a card from row 1</div>
   <button id="newGameBtn">New Game</button>
 
   <script>
+    // === new: list of failure messages ===
+    const failureMessages = [
+      "Takhle se jezdilo naposled v 96'",
+      "Oldschool cenim, ale dneska už to nefunguje.",
+      "Tudy? To jsi hodně bláhovej!",
+      "Ale ale, tudy to nepůjde....",
+      "Mission failed, we'll get them next time.",
+      "Poslední, kdo to tudy zvládl, byl legendární Peter Ludwig.",
+      "Proč tudy? Neprobádaný a nesmyslný!",
+      "Kdybys šel radši doprava, tam to bylo ložený.",
+      "Podceněná příprava zkušeného závodníka...",
+      "Takovou chybu jsme viděli naposledy v památném finále na MS v Ottawě, nepochopitelné.",
+      "To bylo přece jasný...",
+      "Slyšíš to...? To se karta neobrací.",
+      "Nepochopitelná chyba, ale to dnes bohužel není poprvé.",
+      "No a co si čekal?"
+    ];
+
+    // === new: helper to show/hide banner ===
+    function showBanner(text, duration = 3000) {
+      const b = document.getElementById('banner');
+      b.innerText = text;
+      b.style.display = 'block';
+      clearTimeout(b._hideTimer);
+      b._hideTimer = setTimeout(() => {
+        b.style.display = 'none';
+      }, duration);
+    }
+
     // Define standard deck suits and ranks.
     const suits = ['♠', '♥', '♦', '♣'];
     const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -157,13 +207,17 @@
       cardDiv.dataset.flipped = 'true';
       cardDiv.classList.add('disabled');
 
-      // If the card is a losing card (Ace, J, Q or K), then restart.
+      // If the card is a losing card (Ace, J, Q or K), then restart with a banner.
       if (['A', 'J', 'Q', 'K'].includes(card.rank)) {
-        updateMessage(`You flipped ${card.rank}. Wrong card! Restarting game.`);
+        const msg = failureMessages[
+          Math.floor(Math.random() * failureMessages.length)
+        ];
+        showBanner(msg, 4000);                // show failure banner for 4 seconds
+        updateMessage(`You flipped ${card.rank}. Restarting…`);
         setTimeout(() => {
           initializeGame();
         }, 1500);
-      } else {  
+      } else {
         // Otherwise, proceed to the next row.
         currentLine++;
         if (currentLine >= pyramid.length) {
@@ -180,8 +234,14 @@
     // Hook up the New Game button.
     document.getElementById('newGameBtn').addEventListener('click', initializeGame);
 
-    // Start the game when the page loads.
-    window.onload = initializeGame;
+    // Start the game when the page loads, but first show the welcome banner.
+    window.onload = () => {
+      showBanner(
+        "Vítejte na MS v kartokárách v Oslově, v rámci half-time show bude svatba",
+        5000
+      );
+      initializeGame();
+    };
   </script>
 </body>
 </html>
