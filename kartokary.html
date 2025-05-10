@@ -233,11 +233,13 @@
         // Otherwise, proceed to the next row.
         currentLine++;
         if (currentLine >= pyramid.length) {
-          updateMessage('Congratulations! You win!');
-          setTimeout(() => {
-            initializeGame();
-          }, 1500);
-        } else {
+  // show the success banner for 4 seconds
+  showBanner("Hezky, ten by se tím mohl živit", 4000);
+  updateMessage('Congratulations! You win!');
+  setTimeout(() => {
+    initializeGame();
+  }, 1500);
+} else {
           updateMessage();
         }
       }
@@ -249,8 +251,8 @@
     // Start the game when the page loads, but first show the welcome banner.
     window.onload = () => {
       showBanner(
-        "Vítejte na MS v kartokárách v Oslově, v rámci half-time show dnešního MS bude svatba. Procvičte svou taktiku než to dnes propukne! ",
-        5000
+        "Vítejte na MS v kartokárách v Oslově, v rámci half-time show dnešního mistrovství bude svatba.",
+        6000
       );
       initializeGame();
     };
