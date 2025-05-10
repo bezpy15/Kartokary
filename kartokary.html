@@ -81,7 +81,7 @@
   <!-- banner placeholder -->
   <div id="banner" class="banner" style="display:none;"></div>
 
-  <h1>Kartokáry</h1>
+  <h1>Kartokáry - Warm-up na MS</h1>
   <div id="gameBoard"></div>
   <div id="message">Select a card from row 1</div>
   <button id="newGameBtn">New Game</button>
@@ -102,6 +102,7 @@
       "To bylo přece jasný...",
       "Slyšíš to...? To se karta neobrací.",
       "Nepochopitelná chyba, ale to dnes bohužel není poprvé.",
+      "Za takovou chybu se stydí i elévové",
       "No a co si čekal?"
     ];
 
@@ -246,7 +247,7 @@
     // Start the game when the page loads, but first show the welcome banner.
     window.onload = () => {
       showBanner(
-        "Vítejte na MS v kartokárách v Oslově, v rámci half-time show bude svatba",
+        "Vítejte na MS v kartokárách v Oslově, v rámci half-time show dnešního MS bude svatba. Procvičte svou taktiku než to dnes propukne! ",
         5000
       );
       initializeGame();
