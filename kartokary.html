@@ -57,11 +57,12 @@
   top: 10%;
   left: 50%;
   transform: translateX(-50%);
-  width: 80vw;        /* ~80% of viewport width */
-  height: 30vh;       /* ~30% of viewport height */
-  display: flex;      /* NEW */
-  align-items: center;      /* vertical center */
-  justify-content: center;  /* horizontal center */
+  width: 80vw;            /* ~80% of viewport width */
+  height: 30vh;           /* ~30% of viewport height */
+  box-sizing: border-box; /* include padding/border in height */
+  display: flex;          /* enable flex centering */
+  align-items: center;    /* vertical center */
+  justify-content: center;/* horizontal center */
   background: #ffeb3b;
   color: #000;
   font-size: 2em;
@@ -69,9 +70,10 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   z-index: 1000;
-  text-align: center; /* wrap long text nicely */
-  padding: 20px;      /* optional extra space */
+  text-align: center;     /* wrap multi-line text */
+  padding: 0 20px;        /* horizontal padding only */
 }
+
 
 
 
@@ -81,7 +83,7 @@
   <!-- banner placeholder -->
   <div id="banner" class="banner" style="display:none;"></div>
 
-  <h1>Kartokáry - Warm-up na MS</h1>
+  <h1>Kartokáry - Warm-up na MS v Oslově 2025</h1>
   <div id="gameBoard"></div>
   <div id="message">Select a card from row 1</div>
   <button id="newGameBtn">New Game</button>
